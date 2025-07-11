@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
-import { ClickEvent } from 'devextreme/ui/button';
+import { User, Alert, Message, MessageEnteredEvent } from "devextreme/ui/chat";
+import { Observable } from "rxjs";
+import { AppService } from "./app.service";
+import { loadMessages } from "devextreme/localization";
+import DataSource from "devextreme/data/data_source";
 
 @Component({
   selector: 'app-root',
@@ -7,14 +11,55 @@ import { ClickEvent } from 'devextreme/ui/button';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'Angular';
+  dataSource: DataSource;
 
-  counter = 0;
+  user: User;
 
-  buttonText = 'Click count: 0';
+  typingUsers$: Observable<User[]> ;
 
-  onClick(e: ClickEvent): void {
-    this.counter++;
-    this.buttonText = `Click count: ${this.counter}`;
+  alerts$: Observable<Alert[]>;
+
+  copyButtonIcon: string;
+
+  regenerationText: string;
+
+  constructor(private readonly appService: AppService) {
+    loadMessages(this.appService.getDictionary());
+
+    this.dataSource = this.appService.dataSource!;
+    this.user = this.appService.user;
+    this.alerts$ = this.appService.alerts$;
+    this.typingUsers$ = this.appService.typingUsers$;
+    this.regenerationText = this.appService.REGENERATION_TEXT;
+    this.copyButtonIcon = "copy";
+  }
+  convertToHtml(message: Message): string {
+    return this.appService.convertToHtml(message.text || "");
+  }
+
+
+  async onMessageEntered(e: MessageEnteredEvent) {
+      await this.appService.onMessageEntered(e);
+  }
+
+  onCopyButtonClick(message: Message) {
+    navigator.clipboard?.writeText(message.text ?? "");
+
+    this.copyButtonIcon = "check";
+
+    setTimeout(() => {
+      this.copyButtonIcon = "copy";
+    }, 2500);
+  }
+
+  async onRegenerateButtonClick() {
+    this.appService.updateLastMessage();
+    this.appService.toggleDisabledState(true);
+
+    try {
+      await this.appService.regenerate();
+    } finally {
+      this.appService.toggleDisabledState(false);
+    }
   }
 }
