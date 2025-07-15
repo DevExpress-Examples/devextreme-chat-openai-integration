@@ -27,6 +27,8 @@
     "browser-sync": "^3.0.2",
     "devextreme": "24.2.3",
     "devextreme-dist": "24.2.3",
-    "jquery": "^3.7.1"
+    "devextreme-quill": "^1.7.3",
+    "jquery": "^3.7.1",
+    "openai": "^5.5.1"
   }
 }
