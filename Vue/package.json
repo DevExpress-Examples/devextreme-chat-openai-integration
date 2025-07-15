@@ -15,6 +15,11 @@
   "dependencies": {
     "devextreme": "24.2.3",
     "devextreme-vue": "24.2.3",
+    "openai": "^5.9.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },
