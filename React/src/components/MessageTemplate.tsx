@@ -8,7 +8,6 @@ import HTMLReactParser from 'html-react-parser';
 
 import { type Properties as dxButtonProperties } from 'devextreme/ui/button';
 
-const REGENERATION_TEXT = 'Regeneration...';
 function convertToHtml(value: string): string {
   const result = unified()
     .use(remarkParse)
