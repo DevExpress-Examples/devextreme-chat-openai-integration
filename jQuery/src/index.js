@@ -1,11 +1,11 @@
 /** OpenAI integration */
 /** doc: https://github.com/openai/openai-node?tab=readme-ov-file#usage */
-import OpenAI from 'https://esm.sh/openai';
+import OpenAI from 'openai';
 /** End */
-import {unified} from 'https://esm.sh/unified@11?bundle';
-import remarkParse from 'https://esm.sh/remark-parse@11?bundle';
-import remarkRehype from 'https://esm.sh/remark-rehype@11?bundle';
-import rehypeStringify from 'https://esm.sh/rehype-stringify@10?bundle';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import rehypeStringify from 'rehype-stringify';
 
 /** OpenAI integration */
 const deployment = 'gpt-4o-mini';
@@ -26,7 +26,7 @@ const assistant = {
 
 $(() => {
   const store = [];
-  let messages = [];
+  const messages = [];
 
   DevExpress.localization.loadMessages({
     'en': {
@@ -42,9 +42,9 @@ $(() => {
     apiKey,
   });
 
-  async function getAIResponse(messages) {
+  async function getAIResponse(messagesAI) {
     const params = {
-      messages: messages || "",
+      messages: messagesAI || '',
       model: deployment,
     };
 
@@ -118,7 +118,7 @@ $(() => {
     } finally {
       toggleDisabledState(false);
     }
-  };
+  }
 
   function renderMessage(text) {
     const message = {
@@ -147,11 +147,11 @@ $(() => {
 
   function convertToHtml(value) {
     return unified()
-        .use(remarkParse)
-        .use(remarkRehype)
-        .use(rehypeStringify)
-        .processSync(value)
-        .toString();
+      .use(remarkParse)
+      .use(remarkRehype)
+      .use(rehypeStringify)
+      .processSync(value)
+      .toString();
   }
 
   const customStore = new DevExpress.data.CustomStore({
@@ -159,7 +159,7 @@ $(() => {
     load: () => {
       const d = $.Deferred();
 
-      setTimeout(function () {
+      setTimeout(() => {
         d.resolve([...store]);
       });
 
@@ -168,7 +168,7 @@ $(() => {
     insert: (message) => {
       const d = $.Deferred();
 
-      setTimeout(function () {
+      setTimeout(() => {
         store.push(message);
         d.resolve();
       });
@@ -177,7 +177,7 @@ $(() => {
     },
   });
 
-  const instance = $("#dx-ai-chat").dxChat({
+  const instance = $('#dx-ai-chat').dxChat({
     dataSource: customStore,
     reloadOnChange: false,
     showAvatar: false,
@@ -201,39 +201,39 @@ $(() => {
       }
 
       const $textElement = $('<div>')
-          .addClass('dx-chat-messagebubble-text')
-          .html(convertToHtml(message.text))
-          .appendTo(element);
+        .addClass('dx-chat-messagebubble-text')
+        .html(convertToHtml(message.text))
+        .appendTo(element);
 
       const $buttonContainer = $('<div>')
-          .addClass('dx-bubble-button-container');
+        .addClass('dx-bubble-button-container');
 
       $('<div>')
-          .dxButton({
-            icon: 'copy',
-            stylingMode: 'text',
-            hint: 'Copy',
-            onClick: ({ component }) => {
-              navigator.clipboard.writeText($textElement.text());
-              component.option({ icon: 'check' });
-              setTimeout(() => {
-                component.option({ icon: 'copy' });
-              }, 5000);
-            },
-          })
-          .appendTo($buttonContainer);
+        .dxButton({
+          icon: 'copy',
+          stylingMode: 'text',
+          hint: 'Copy',
+          onClick: ({ component }) => {
+            navigator.clipboard.writeText($textElement.text());
+            component.option({ icon: 'check' });
+            setTimeout(() => {
+              component.option({ icon: 'copy' });
+            }, 5000);
+          },
+        })
+        .appendTo($buttonContainer);
 
       $('<div>')
-          .dxButton({
-            icon: 'refresh',
-            stylingMode: 'text',
-            hint: 'Regenerate',
-            onClick: () => {
-              updateLastMessage();
-              regenerate();
-            },
-          })
-          .appendTo($buttonContainer);
+        .dxButton({
+          icon: 'refresh',
+          stylingMode: 'text',
+          hint: 'Regenerate',
+          onClick: () => {
+            updateLastMessage();
+            regenerate();
+          },
+        })
+        .appendTo($buttonContainer);
 
       $buttonContainer.appendTo(element);
     },
