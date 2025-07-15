@@ -2,16 +2,17 @@ module.exports = {
   root: true,
   extends: ['devextreme/spell-check'],
   overrides: [{
-    files: ['*.ts', '*.vue'],
+    files: ['*.ts', '*.vue', '*.js'],
     extends: [
       '@vue/eslint-config-typescript',
       'devextreme/vue'
     ],
     env: { es6: true },
     parserOptions: {
+      sourceType: 'module',
       project: './tsconfig.json',
       'createDefaultProgram': true,
-      'ecmaVersion': 2020,
+      'ecmaVersion': 2022,
     },
     globals: {
       System: false,
