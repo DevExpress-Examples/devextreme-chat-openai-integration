@@ -37,10 +37,6 @@ function MessageTemplate({ text, onRegenerateButtonClick }: MessageProps): JSX.E
     }, 2500);
   }, [text]);
 
-  if (text === REGENERATION_TEXT) {
-    // return <span>{REGENERATION_TEXT}</span>;
-  }
-
   return (
     <React.Fragment>
       <div className='dx-chat-messagebubble-text'>

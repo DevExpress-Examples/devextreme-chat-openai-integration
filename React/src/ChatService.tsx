@@ -138,8 +138,6 @@ class AppService {
     const data = {
       text: text ?? 'Regeneration...',
     };
-    // can't use update here,
-    // React tries to remove or modify a DOM element that has already been removed or modified.
 
     this.dataSource?.store().push([{ type: 'remove', key: lastMessage.id }]);
     this.dataSource?.store().push([
