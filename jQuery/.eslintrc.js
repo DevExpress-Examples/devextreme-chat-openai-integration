@@ -1,6 +1,5 @@
 module.exports = {
   root: true,
-  extends: ['devextreme/spell-check'],
   overrides: [{
     files: ['*.js'],
     extends: ['devextreme/jquery'],
