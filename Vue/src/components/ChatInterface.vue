@@ -70,26 +70,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
-:deep(.dx-chat) {
-  flex: 1;
+:deep(.demo-container) {
   display: flex;
-  flex-direction: column;
-  border-radius: 8px;
+  justify-content: center;
 }
 
-:deep(.dx-chat-message-list) {
-  flex: 1;
-}
-:deep(.dx-chat-message-content .dx-chat-message-bubble) {
-  border-radius: 8px;
-}
-
-:deep(.dx-chat-message-bubble.dx-chat-message-bubble-sent) {
-  background-color: rgb(227 242 253);
-}
-
-:deep(.dx-chat-message-bubble.dx-chat-message-bubble-received) {
-  background-color: rgb(241 241 241);
+:deep(.dx-chat) {
+  max-width: 900px;
 }
 
 :deep(.dx-chat-messagelist-empty-image) {
@@ -97,59 +84,51 @@ onMounted(() => {
 }
 
 :deep(.dx-chat-messagelist-empty-message) {
-  font-size: 16px;
-  color: rgb(102 102 102);
-  text-align: center;
-  padding: 20px;
+  font-size: var(--dx-font-size-heading-5);
+}
+
+:deep(.dx-chat-messagebubble-content),
+:deep(.dx-chat-messagebubble-text) {
+  display: flex;
+  flex-direction: column;
 }
 
 :deep(.dx-bubble-button-container) {
   display: none;
-  gap: 8px;
-  margin-top: 8px;
+}
+
+:deep(.dx-button) {
+  display: inline-block;
+  color: var(--dx-color-icon);
 }
 
 :deep(.dx-chat-messagegroup-alignment-start:last-child .dx-chat-messagebubble:last-child .dx-bubble-button-container) {
   display: flex;
+  gap: 4px;
+  margin-top: 8px;
 }
 
-:deep(.dx-button) {
-  background: transparent;
-  border: none;
-  padding: 4px;
-  color: rgb(102 102 102);
+:deep(.dx-chat-messagebubble-content > div > p:first-child) {
+  margin-top: 0;
 }
 
-:deep(.dx-button:hover) {
-  background: rgb(0 0 0 / 4%);
+:deep(.dx-chat-messagebubble-content > div > p:last-child) {
+  margin-bottom: 0;
 }
 
-:deep(.dx-chat-messagebubble-text) {
-  line-height: 1.5;
+:deep(.dx-chat-messagebubble-content ol),
+:deep(.dx-chat-messagebubble-content ul) {
+  white-space: normal;
 }
 
-:deep(.dx-chat-messagebubble-text ol),
-:deep(.dx-chat-messagebubble-text ul) {
-  padding-left: 20px;
-  margin: 8px 0;
+:deep(.dx-chat-messagebubble-content h1),
+:deep(.dx-chat-messagebubble-content h2),
+:deep(.dx-chat-messagebubble-content h3),
+:deep(.dx-chat-messagebubble-content h4),
+:deep(.dx-chat-messagebubble-content h5),
+:deep(.dx-chat-messagebubble-content h6) {
+  font-size: revert;
+  font-weight: revert;
 }
 
-:deep(.dx-chat-messagebubble-text pre) {
-  background: rgb(245 245 245);
-  padding: 12px;
-  border-radius: 4px;
-  overflow-x: auto;
-}
-
-:deep(.dx-chat-messagebubble-text code) {
-  font-family: monospace;
-  background: rgb(245 245 245);
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-size: 0.9em;
-}
-
-:deep(.dx-chat-message-pending) {
-  opacity: 0.6;
-}
 </style>
