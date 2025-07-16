@@ -1,15 +1,9 @@
 /** OpenAI integration */
 /** doc: https://github.com/openai/openai-node?tab=readme-ov-file#usage */
-import OpenAI from 'openai';
-/** End */
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkRehype from 'remark-rehype';
-import rehypeStringify from 'rehype-stringify';
 import {
   assistant, deployment, user, apiKey,
   CHAT_MESSAGEBOX_BUTTON_CLASS, CHAT_MESSAGEBOX_TEXTAREA_CLASS, REGENERATION_TEXT,
-} from './data';
+} from './data.js';
 
 $(() => {
   const store = [];
