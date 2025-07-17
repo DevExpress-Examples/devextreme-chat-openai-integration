@@ -16,18 +16,19 @@ const OpenAIConfig = {
   deployment: 'gpt-4o-mini'
 };
 
+const assistant = { id: 'assistant', name: 'Virtual Assistant' };
+
 export function useChatLogic() {
   // Состояние
-  const dataSource = ref(null);
+  const dataSource = ref<DataSource | null>(null);
   const user = ref({ id: 'user' });
-  const assistant = ref({ id: 'assistant', name: 'Virtual Assistant' });
-  const typingUsers = ref([]);
-  const alerts = ref([]);
+  const typingUsers = ref<Array<{id: string, name: string}>>([]);
+  const alerts = ref<Array<{message: string}>>([]);
   const regenerationText = ref('Regeneration...');
   const copyButtonIcon = ref('copy');
   const isDisabled = ref(false);
   const store = ref([]);
-  const messages = ref([]);
+  const messages = ref<Array<{ role: 'user' | 'assistant' | 'system'; content: string }>>([]);
   const chatService = new OpenAI(OpenAIConfig);
 
   const loadMessage = () => {
@@ -53,7 +54,7 @@ export function useChatLogic() {
     dataSource.value = new DataSource({ store: customStore, paginate: false });
   };
 
-  const getAIResponse = async(messages) => {
+  const getAIResponse = async(messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>) => {
     const params = {
       messages: messages.map(msg => ({
         role: msg.role,
@@ -68,7 +69,7 @@ export function useChatLogic() {
 
   const processMessageSending = async() => {
     toggleDisabledState(true);
-    typingUsers.value = [assistant.value];
+    typingUsers.value = [assistant];
 
     try {
       const aiResponse = await getAIResponse(messages.value);
@@ -85,7 +86,7 @@ export function useChatLogic() {
     }
   };
 
-  const updateLastMessage = (text) => {
+  const updateLastMessage = (text?: string | null) => {
     let items = dataSource.value?.items();
     const lastMessage = items?.at(-1);
     const data = {
@@ -99,11 +100,11 @@ export function useChatLogic() {
     }]);
   };
 
-  const renderAssistantMessage = (text) => {
+  const renderAssistantMessage = (text: string) => {
     const message = {
       id: Date.now(),
       timestamp: new Date(),
-      author: assistant.value,
+      author: assistant,
       text
     };
 
@@ -115,7 +116,7 @@ export function useChatLogic() {
     setTimeout(() => setAlerts([]), ALERT_TIMEOUT);
   };
 
-  const setAlerts = (newAlerts) => {
+  const setAlerts = (newAlerts: any[]) => {
     alerts.value = newAlerts;
   };
 
@@ -135,7 +136,7 @@ export function useChatLogic() {
     }
   };
 
-  const convertToHtml = (message) => {
+  const convertToHtml = (message: {text: string}) => {
     return unified()
       .use(remarkParse)
       .use(remarkRehype)
@@ -144,17 +145,18 @@ export function useChatLogic() {
       .toString();
   };
 
-  const toggleDisabledState = (disabled) => {
+  const toggleDisabledState = (disabled: boolean) => {
     let element = document.querySelector('.dx-chat-messagebox-textarea');
-    let textAreaInstance = element ? TextArea.getInstance(element) : null;
+    let textAreaInstance = element ? TextArea.getInstance(element) as TextArea : null;
 
-    textAreaInstance?.option({ disabled });
+    textAreaInstance?.option('disabled', disabled);
 
     if (!disabled) {
       textAreaInstance?.focus();
     }
   };
 
+  // @ts-ignore
   const onMessageEntered = async({ message }) => {
     dataSource.value?.store().push([{
       type: 'insert',
@@ -165,7 +167,7 @@ export function useChatLogic() {
     await processMessageSending();
   };
 
-  const onCopyButtonClick = (message) => {
+  const onCopyButtonClick = (message: {text: string}) => {
     navigator.clipboard?.writeText(message.text ?? '');
     copyButtonIcon.value = 'check';
     setTimeout(() => copyButtonIcon.value = 'copy', 2500);

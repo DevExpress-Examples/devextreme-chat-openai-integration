@@ -45,7 +45,7 @@
 import { onMounted } from 'vue';
 import { DxChat } from 'devextreme-vue/chat';
 import { DxButton } from 'devextreme-vue/button';
-import { useChatLogic } from '@/helpers/chat.helpers.js';
+import { useChatLogic } from '@/helpers/chat.helpers';
 
 const {
   dataSource,
@@ -108,11 +108,11 @@ onMounted(() => {
   margin-top: 8px;
 }
 
-:deep(.dx-chat-messagebubble-content > div > p:first-child) {
+:deep(.dx-chat-messagebubble-content > div > div > p:first-child) {
   margin-top: 0;
 }
 
-:deep(.dx-chat-messagebubble-content > div > p:last-child) {
+:deep(.dx-chat-messagebubble-content > div > div > p:last-child) {
   margin-bottom: 0;
 }
 
