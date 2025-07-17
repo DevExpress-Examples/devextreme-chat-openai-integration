@@ -5,7 +5,6 @@ import {
   type User, type Alert, type MessageEnteredEvent,
 } from 'devextreme/ui/chat';
 import { appService } from '../ChatService';
-import '../App.css';
 import MessageTemplate from './MessageTemplate';
 
 export default function ChatApp(): JSX.Element {
