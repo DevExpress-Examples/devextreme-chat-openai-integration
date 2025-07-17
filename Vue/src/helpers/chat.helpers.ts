@@ -8,6 +8,7 @@ import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
 import { loadMessages } from 'devextreme/localization';
 import TextArea from 'devextreme/ui/text_area';
+import type {MessageEnteredEvent} from "devextreme/ui/chat";
 
 const ALERT_TIMEOUT = 10000;
 const OpenAIConfig = {
@@ -157,7 +158,8 @@ export function useChatLogic() {
   };
 
   // @ts-ignore
-  const onMessageEntered = async({ message }) => {
+  const onMessageEntered = async(e: MessageEnteredEvent) => {
+    let { message } = e;
     dataSource.value?.store().push([{
       type: 'insert',
       data: { id: Date.now(), ...message }
