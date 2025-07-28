@@ -8,7 +8,7 @@ import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
 import { loadMessages } from 'devextreme/localization';
 import TextArea from 'devextreme/ui/text_area';
-import type {MessageEnteredEvent} from "devextreme/ui/chat";
+import type { MessageEnteredEvent } from "devextreme/ui/chat";
 
 const ALERT_TIMEOUT = 10000;
 const OpenAIConfig = {
@@ -20,7 +20,6 @@ const OpenAIConfig = {
 const assistant = { id: 'assistant', name: 'Virtual Assistant' };
 
 export function useChatLogic() {
-  // Состояние
   const dataSource = ref<DataSource | null>(null);
   const user = ref({ id: 'user' });
   const typingUsers = ref<Array<{id: string, name: string}>>([]);
@@ -157,7 +156,6 @@ export function useChatLogic() {
     }
   };
 
-  // @ts-ignore
   const onMessageEntered = async(e: MessageEnteredEvent) => {
     let { message } = e;
     dataSource.value?.store().push([{
