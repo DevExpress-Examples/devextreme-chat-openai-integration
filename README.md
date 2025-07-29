@@ -10,6 +10,8 @@ This repository stores code for the following DevExtreme help topic: [Integrate 
 
 This example demonstrates how to integrate DevExtreme Chat with [OpenAI](https://platform.openai.com/docs/overview). Obtain your own [API key](https://platform.openai.com/api-keys) and replace the placeholder to activate the example.
 
+<div align="center"><img src="./chat-openai.png" /></div>
+
 ## Files to Review
 
 - **jQuery**
