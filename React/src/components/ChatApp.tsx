@@ -18,7 +18,7 @@ export default function ChatApp(): JSX.Element {
     };
   }, []);
 
-  const onMessageEntered = useCallback(async (e: ChatTypes.MessageEnteredEvent): Promise<void> => {
+  const onMessageEntered = useCallback((e: ChatTypes.MessageEnteredEvent): void => {
     appService.onMessageEntered(e);
   }, []);
 
