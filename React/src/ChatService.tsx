@@ -16,7 +16,7 @@ class AppService {
 
   ALERT_TIMEOUT = 10000;
 
-  user: User = {
+  user: ChatTypes.User = {
     id: 'user',
   };
 
