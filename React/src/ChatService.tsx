@@ -3,27 +3,10 @@ import DataSource from 'devextreme/data/data_source';
 import CustomStore from 'devextreme/data/custom_store';
 import { OpenAI } from 'openai';
 import { BehaviorSubject, Observable } from 'rxjs';
-import TextArea from 'devextreme/ui/text_area';
+import { ALERT_TIMEOUT, assistant, OpenAIConfig } from './data.ts';
 
 class AppService {
   chatService: OpenAI;
-
-  OpenAIConfig = {
-    dangerouslyAllowBrowser: true,
-    apiKey: 'OPEN_AI_KEY',
-    deployment: 'gpt-4o-mini',
-  };
-
-  ALERT_TIMEOUT = 10000;
-
-  user: ChatTypes.User = {
-    id: 'user',
-  };
-
-  assistant: ChatTypes.User = {
-    id: 'assistant',
-    name: 'Virtual Assistant',
-  };
 
   store: ChatTypes.Message[] = [];
 
@@ -40,7 +23,7 @@ class AppService {
   private readonly alertsSubject: BehaviorSubject<ChatTypes.Alert[]> = new BehaviorSubject<ChatTypes.Alert[]>([]);
 
   constructor() {
-    this.chatService = new OpenAI(this.OpenAIConfig);
+    this.chatService = new OpenAI(OpenAIConfig);
     this.initDataSource();
     this.typingUsersSubject.next([]);
     this.alertsSubject.next([]);
@@ -92,7 +75,7 @@ class AppService {
         role: msg.role,
         content: msg.content,
       })),
-      model: this.OpenAIConfig.deployment,
+      model: OpenAIConfig.deployment,
     };
 
     const response = await this.chatService.chat.completions.create(params);
@@ -100,9 +83,10 @@ class AppService {
     return data.choices[0].message?.content;
   }
 
-  async processMessageSending(): Promise<void> {
-    this.toggleDisabledState(true);
-    this.typingUsersSubject.next([this.assistant]);
+  async processMessageSending(setDisabled: Function, event: Event): Promise<void> {
+    setDisabled(true);
+    (event.target as HTMLElement).blur();
+    this.typingUsersSubject.next([assistant]);
 
     try {
       const aiResponse = await this.getAIResponse(this.messages);
@@ -112,21 +96,12 @@ class AppService {
         this.renderAssistantMessage(aiResponse ?? '');
       }, 200);
     } catch {
+      (event.target as HTMLElement).focus();
       this.typingUsersSubject.next([]);
       this.alertLimitReached();
     } finally {
-      this.toggleDisabledState(false);
-    }
-  }
-
-  toggleDisabledState(disabled: boolean): void {
-    let element = document.querySelector('.dx-chat-messagebox-textarea');
-    let textAreaInstance = element ? TextArea.getInstance(element) as TextArea : null;
-
-    textAreaInstance?.option({ disabled });
-
-    if (!disabled) {
-      textAreaInstance?.focus();
+      (event.target as HTMLElement).focus();
+      setDisabled(false);
     }
   }
 
@@ -150,7 +125,7 @@ class AppService {
     const message = {
       id: Date.now(),
       timestamp: new Date(),
-      author: this.assistant,
+      author: assistant,
       text,
     };
 
@@ -166,7 +141,7 @@ class AppService {
 
     setTimeout((): void => {
       this.setAlerts([]);
-    }, this.ALERT_TIMEOUT);
+    }, ALERT_TIMEOUT);
   }
 
   setAlerts(alerts: ChatTypes.Alert[]): void {
@@ -192,13 +167,14 @@ class AppService {
     }
   }
 
-  onMessageEntered({ message }: ChatTypes.MessageEnteredEvent): void {
+  onMessageEntered(event: ChatTypes.MessageEnteredEvent, setDisabled: Function): void {
+    let { message } = event;
     this.dataSource
       ?.store()
       .push([{ type: 'insert', data: { id: Date.now(), ...message } }]);
 
     this.messages.push({ role: 'user', content: message?.text ?? '' });
-    void this.processMessageSending();
+    void this.processMessageSending(setDisabled, event.event);
   }
 }
 

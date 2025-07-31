@@ -3,9 +3,11 @@ import { loadMessages } from 'devextreme/localization';
 import Chat, { type ChatTypes } from 'devextreme-react/chat';
 import { appService } from '../ChatService';
 import MessageTemplate from './MessageTemplate';
+import { CHAT_DISABLED_CLASS, user as chatUser } from '../data.ts';
 
 export default function ChatApp(): JSX.Element {
-  const user = appService.user;
+  const user = chatUser;
+  const [isDisabled, setDisabled] = useState(false);
   const [typingUsers, setTypingUsers] = useState<ChatTypes.User[]>([]);
   const [alerts, setAlerts] = useState<ChatTypes.Alert[]>([]);
 
@@ -19,17 +21,17 @@ export default function ChatApp(): JSX.Element {
   }, []);
 
   const onMessageEntered = useCallback((e: ChatTypes.MessageEnteredEvent): void => {
-    appService.onMessageEntered(e);
-  }, []);
+    appService.onMessageEntered(e, setDisabled);
+  }, [isDisabled]);
 
   const onRegenerateButtonClick = useCallback(async (): Promise<void> => {
+    setDisabled(true);
     appService.updateLastMessage();
-    appService.toggleDisabledState(true);
 
     try {
       await appService.regenerate();
     } finally {
-      appService.toggleDisabledState(false);
+      setDisabled(false);
     }
   }, []);
 
@@ -41,6 +43,7 @@ export default function ChatApp(): JSX.Element {
   return (
     <div className="demo-container">
       <Chat
+        className={isDisabled ? CHAT_DISABLED_CLASS : ''}
         dataSource={appService.dataSource}
         reloadOnChange={false}
         showAvatar={false}
