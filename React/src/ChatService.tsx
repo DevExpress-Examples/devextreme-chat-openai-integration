@@ -4,6 +4,8 @@ import CustomStore from 'devextreme/data/custom_store';
 import { OpenAI } from 'openai';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ALERT_TIMEOUT, assistant, OpenAIConfig } from './data.ts';
+import DevExpress from "devextreme";
+import DxEvent = DevExpress.events.DxEvent;
 
 class AppService {
   chatService: OpenAI;
@@ -83,9 +85,9 @@ class AppService {
     return data.choices[0].message?.content;
   }
 
-  async processMessageSending(setDisabled: Function, event: Event): Promise<void> {
+  async processMessageSending(setDisabled: Function, event: DxEvent<KeyboardEvent | PointerEvent | MouseEvent | TouchEvent> | undefined): Promise<void> {
     setDisabled(true);
-    (event.target as HTMLElement).blur();
+    (event?.target as HTMLElement).blur();
     this.typingUsersSubject.next([assistant]);
 
     try {
@@ -96,11 +98,11 @@ class AppService {
         this.renderAssistantMessage(aiResponse ?? '');
       }, 200);
     } catch {
-      (event.target as HTMLElement).focus();
+      (event?.target as HTMLElement).focus();
       this.typingUsersSubject.next([]);
       this.alertLimitReached();
     } finally {
-      (event.target as HTMLElement).focus();
+      (event?.target as HTMLElement).focus();
       setDisabled(false);
     }
   }
