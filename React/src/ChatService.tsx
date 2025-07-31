@@ -1,6 +1,4 @@
-import {
-  type User, type Alert, type MessageEnteredEvent, type Message,
-} from 'devextreme/ui/chat';
+import { type ChatTypes } from 'devextreme-react/chat';
 import DataSource from 'devextreme/data/data_source';
 import CustomStore from 'devextreme/data/custom_store';
 import { OpenAI } from 'openai';
@@ -22,24 +20,24 @@ class AppService {
     id: 'user',
   };
 
-  assistant: User = {
+  assistant: ChatTypes.User = {
     id: 'assistant',
     name: 'Virtual Assistant',
   };
 
-  store: Message[] = [];
+  store: ChatTypes.Message[] = [];
 
   messages: { role: 'user' | 'assistant' | 'system'; content: string }[] = [];
 
-  alerts: Alert[] = [];
+  alerts: ChatTypes.Alert[] = [];
 
   customStore?: CustomStore;
 
   dataSource?: DataSource;
 
-  private readonly typingUsersSubject: BehaviorSubject<User[]> = new BehaviorSubject<User[]>([]);
+  private readonly typingUsersSubject: BehaviorSubject<ChatTypes.User[]> = new BehaviorSubject<ChatTypes.User[]>([]);
 
-  private readonly alertsSubject: BehaviorSubject<Alert[]> = new BehaviorSubject<Alert[]>([]);
+  private readonly alertsSubject: BehaviorSubject<ChatTypes.Alert[]> = new BehaviorSubject<ChatTypes.Alert[]>([]);
 
   constructor() {
     this.chatService = new OpenAI(this.OpenAIConfig);
@@ -48,11 +46,11 @@ class AppService {
     this.alertsSubject.next([]);
   }
 
-  get typingUsers$(): Observable<User[]> {
+  get typingUsers$(): Observable<ChatTypes.User[]> {
     return this.typingUsersSubject.asObservable();
   }
 
-  get alerts$(): Observable<Alert[]> {
+  get alerts$(): Observable<ChatTypes.Alert[]> {
     return this.alertsSubject.asObservable();
   }
 
@@ -74,7 +72,7 @@ class AppService {
           resolve([...this.store]);
         }, 0);
       }),
-      insert: (message: Message) => new Promise((resolve): void => {
+      insert: (message: ChatTypes.Message) => new Promise((resolve): void => {
         setTimeout(() => {
           this.store.push(message);
           resolve(message);
@@ -171,7 +169,7 @@ class AppService {
     }, this.ALERT_TIMEOUT);
   }
 
-  setAlerts(alerts: Alert[]): void {
+  setAlerts(alerts: ChatTypes.Alert[]): void {
     this.alerts = alerts;
     this.alertsSubject.next(alerts);
   }
@@ -194,7 +192,7 @@ class AppService {
     }
   }
 
-  onMessageEntered({ message }: MessageEnteredEvent): void {
+  onMessageEntered({ message }: ChatTypes.MessageEnteredEvent): void {
     this.dataSource
       ?.store()
       .push([{ type: 'insert', data: { id: Date.now(), ...message } }]);
