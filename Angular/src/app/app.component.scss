@@ -3,6 +3,11 @@
   justify-content: center;
 }
 
+::ng-deep .chat-disabled .dx-chat-messagebox {
+  opacity: 0.5;
+  pointer-events: none !important;
+}
+
 ::ng-deep .dx-chat {
   max-width: 900px;
 }

@@ -5,7 +5,7 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
-import { User, Alert, MessageEnteredEvent } from "devextreme/ui/chat";
+import { type DxChatTypes } from 'devextreme-angular/ui/chat';
 import DataSource from "devextreme/data/data_source";
 import CustomStore from "devextreme/data/custom_store";
 import TextArea from 'devextreme/ui/text_area';
@@ -24,26 +24,26 @@ export class AppService {
   REGENERATION_TEXT = "Regeneration...";
   ALERT_TIMEOUT = 10000;
 
-  user: User = {
+  user: DxChatTypes.User = {
     id: "user",
   };
 
-  assistant: User = {
+  assistant: DxChatTypes.User = {
     id: "assistant",
     name: "Virtual Assistant",
   };
 
-  store: Array<{ id: number; timestamp: Date; author: User; text: string }> = [];
+  store: Array<{ id: number; timestamp: Date; author: DxChatTypes.User; text: string }> = [];
   messages: Array<{ role: "user" | "assistant" | "system"; content: string }> = [];
-  alerts: Alert[] = [];
+  alerts: DxChatTypes.Alert[] = [];
 
   customStore: CustomStore | undefined;
 
   dataSource: DataSource | undefined;
 
-  typingUsersSubject: BehaviorSubject<User[]> = new BehaviorSubject<User[]>([]);
+  typingUsersSubject: BehaviorSubject<DxChatTypes.User[]> = new BehaviorSubject<DxChatTypes.User[]>([]);
 
-  alertsSubject: BehaviorSubject<Alert[]> = new BehaviorSubject<Alert[]>([]);
+  alertsSubject: BehaviorSubject<DxChatTypes.Alert[]> = new BehaviorSubject<DxChatTypes.Alert[]>([]);
 
   constructor() {
     this.chatService = new OpenAI(this.OpenAIConfig);
@@ -52,11 +52,11 @@ export class AppService {
     this.alertsSubject.next([]);
   }
 
-  get typingUsers$(): Observable<User[]> {
+  get typingUsers$(): Observable<DxChatTypes.User[]> {
     return this.typingUsersSubject.asObservable();
   }
 
-  get alerts$(): Observable<Alert[]> {
+  get alerts$(): Observable<DxChatTypes.Alert[]> {
     return this.alertsSubject.asObservable();
   }
 
@@ -70,14 +70,15 @@ export class AppService {
       },
     };
   }
-  toggleDisabledState(disabled: boolean, event?: Event) {
-    let element = document.querySelector(`.dx-chat-messagebox-textarea`);
-    let textAreaInstance = element ? TextArea.getInstance(element) as TextArea : null;
+  toggleDisabledState(disabled: boolean, event?: { target?: EventTarget } | undefined) {
+    const element = event?.target as HTMLElement;
 
-    textAreaInstance?.option({ disabled });
-
-    if (!disabled) {
-      textAreaInstance?.focus();
+    if (element) {
+      if (disabled) {
+        element.blur();
+      } else {
+        element.focus();
+      }
     }
   }
   initDataSource() {
@@ -122,8 +123,8 @@ export class AppService {
     return data.choices[0].message?.content;
   }
 
-  async processMessageSending() {
-    this.toggleDisabledState(true);
+  async processMessageSending(e: DxChatTypes.MessageEnteredEvent) {
+    this.toggleDisabledState(true, e.event);
 
     this.typingUsersSubject.next([this.assistant]);
     try {
@@ -137,7 +138,8 @@ export class AppService {
       this.typingUsersSubject.next([]);
       this.alertLimitReached();
     } finally {
-      this.toggleDisabledState(false);
+      console.log('hi')
+      this.toggleDisabledState(false, e.event);
     }
   }
 
@@ -179,7 +181,7 @@ export class AppService {
     }, this.ALERT_TIMEOUT);
   }
 
-  setAlerts(alerts: Alert[]) {
+  setAlerts(alerts: DxChatTypes.Alert[]) {
     this.alerts = alerts;
     this.alertsSubject.next(alerts);
   }
@@ -214,12 +216,13 @@ export class AppService {
     return result;
   }
 
-  async onMessageEntered({ message, event }: MessageEnteredEvent) {
+  async onMessageEntered(event: DxChatTypes.MessageEnteredEvent) {
+    let { message } = event;
     this.dataSource
       ?.store()
       .push([{ type: "insert", data: { id: Date.now(), ...message } }]);
 
     this.messages.push({ role: "user", content: message?.text ?? "" });
-    this.processMessageSending();
+    await this.processMessageSending(event);
   }
 }
