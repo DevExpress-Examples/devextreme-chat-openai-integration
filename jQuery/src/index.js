@@ -1,139 +1,20 @@
 /** OpenAI integration */
 /** doc: https://github.com/openai/openai-node?tab=readme-ov-file#usage */
+import { user, apiKey, REGENERATION_TEXT } from './data.js';
 import {
-  assistant, deployment, user, apiKey,
-  CHAT_MESSAGEBOX_BUTTON_CLASS, CHAT_MESSAGEBOX_TEXTAREA_CLASS, REGENERATION_TEXT,
-} from './data.js';
+  loadMessages, processMessageSending, convertToHtml, updateLastMessage, regenerate,
+} from './helpers.js';
 
 $(() => {
-  const store = [];
+  const messageStore = [];
   const messages = [];
 
-  DevExpress.localization.loadMessages({
-    'en': {
-      'dxChat-emptyListMessage': 'Chat is Empty',
-      'dxChat-emptyListPrompt': 'AI Assistant is ready to answer your questions.',
-      'dxChat-textareaPlaceholder': 'Ask AI Assistant...',
-    },
-  });
+  loadMessages();
 
-  /** OpenAI integration */
   const chatService = new OpenAI({
     dangerouslyAllowBrowser: true,
     apiKey,
   });
-
-  async function getAIResponse(messagesAI) {
-    const params = {
-      messages: messagesAI || '',
-      model: deployment,
-    };
-
-    const response = await chatService.chat.completions.create(params);
-    const data = { choices: response.choices };
-
-    return data.choices[0].message?.content;
-  }
-  /** End */
-
-  function alertLimitReached() {
-    instance.option({
-      alerts: [{
-        message: 'Request limit reached, try again in a minute.',
-      }],
-    });
-
-    setTimeout(() => {
-      instance.option({ alerts: [] });
-    }, 10000);
-  }
-
-  function toggleDisabledState(disabled) {
-    const $button = instance.element().find(`.${CHAT_MESSAGEBOX_BUTTON_CLASS}`);
-    const $textArea = instance.element().find(`.${CHAT_MESSAGEBOX_TEXTAREA_CLASS}`);
-    const buttonInstance = $button.dxButton('instance');
-    const textAreaInstance = $textArea.dxTextArea('instance');
-
-    buttonInstance.option({ disabled });
-    textAreaInstance.option({ disabled });
-
-    if (!disabled) {
-      textAreaInstance.focus();
-    }
-  }
-
-  async function processMessageSending() {
-    toggleDisabledState(true);
-
-    instance.option({ typingUsers: [assistant] });
-
-    try {
-      const aiResponse = await getAIResponse(messages);
-
-      setTimeout(() => {
-        instance.option({ typingUsers: [] });
-
-        messages.push({ role: 'assistant', content: aiResponse });
-
-        renderMessage(aiResponse);
-      }, 200);
-    } catch {
-      instance.option({ typingUsers: [] });
-      alertLimitReached();
-    } finally {
-      toggleDisabledState(false);
-    }
-  }
-
-  async function regenerate() {
-    toggleDisabledState(true);
-
-    try {
-      const aiResponse = await getAIResponse(messages.slice(0, -1));
-
-      updateLastMessage(aiResponse);
-      messages.at(-1).content = aiResponse;
-    } catch {
-      updateLastMessage(messages.at(-1).content);
-      alertLimitReached();
-    } finally {
-      toggleDisabledState(false);
-    }
-  }
-
-  function renderMessage(text) {
-    const message = {
-      id: Date.now(),
-      timestamp: new Date(),
-      author: assistant,
-      text,
-    };
-
-    customStore.push([{ type: 'insert', data: message }]);
-  }
-
-  function updateLastMessage(text) {
-    const { items } = instance.option();
-    const lastMessage = items.at(-1);
-    const data = {
-      text: text ?? REGENERATION_TEXT,
-    };
-
-    customStore.push([{
-      type: 'update',
-      key: lastMessage.id,
-      data,
-    }]);
-  }
-
-  function convertToHtml(value) {
-    return unified()
-      .use(remarkParse)
-      .use(remarkRehype)
-      .use(rehypeStringify)
-      .processSync(value)
-      .toString();
-  }
 
   const customStore = new DevExpress.data.CustomStore({
     key: 'id',
@@ -141,7 +22,7 @@ $(() => {
       const d = $.Deferred();
 
       setTimeout(() => {
-        d.resolve([...store]);
+        d.resolve([...messageStore]);
       });
 
       return d.promise();
@@ -150,7 +31,7 @@ $(() => {
       const d = $.Deferred();
 
       setTimeout(() => {
-        store.push(message);
+        messageStore.push(message);
         d.resolve();
       });
 
@@ -171,7 +52,7 @@ $(() => {
       customStore.push([{ type: 'insert', data: { id: Date.now(), ...message } }]);
       messages.push({ role: 'user', content: message.text });
 
-      processMessageSending();
+      processMessageSending(instance, messages, customStore, chatService);
     },
     messageTemplate: (data, element) => {
       const { message } = data;
@@ -210,8 +91,8 @@ $(() => {
           stylingMode: 'text',
           hint: 'Regenerate',
           onClick: () => {
-            updateLastMessage();
-            regenerate();
+            updateLastMessage('', instance, customStore);
+            regenerate(instance, messages, chatService, customStore);
           },
         })
         .appendTo($buttonContainer);
