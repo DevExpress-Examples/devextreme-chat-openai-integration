@@ -6,9 +6,9 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import { type DxChatTypes } from 'devextreme-angular/ui/chat';
-import DataSource from "devextreme/data/data_source";
-import CustomStore from "devextreme/data/custom_store";
-import TextArea from 'devextreme/ui/text_area';
+import { DataSource } from 'devextreme-angular/common/data';
+import { CustomStore } from 'devextreme-angular/common/data';
+
 @Injectable({
   providedIn: "root",
 })
@@ -138,7 +138,6 @@ export class AppService {
       this.typingUsersSubject.next([]);
       this.alertLimitReached();
     } finally {
-      console.log('hi')
       this.toggleDisabledState(false, e.event);
     }
   }

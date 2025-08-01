@@ -3,7 +3,7 @@ import { type DxChatTypes } from 'devextreme-angular/ui/chat';
 import { Observable } from "rxjs";
 import { AppService } from "./app.service";
 import { loadMessages } from "devextreme/localization";
-import DataSource from "devextreme/data/data_source";
+import { DataSource } from 'devextreme-angular/common/data';
 
 @Component({
   selector: 'app-root',
