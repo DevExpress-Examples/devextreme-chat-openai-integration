@@ -20,9 +20,9 @@ This example demonstrates how to integrate DevExtreme Chat with [OpenAI](https:/
     - [app.component.html](Angular/src/app/app.component.html)
     - [app.component.ts](Angular/src/app/app.component.ts)
 - **Vue**
-    - [Home.vue](Vue/src/components/ChatInterface.vue)
+    - [ChatInterface.vue](Vue/src/components/ChatInterface.vue)
 - **React**
-    - [App.tsx](React/src/components/ChatApp.tsx)
+    - [ChatApp.tsx](React/src/components/ChatApp.tsx)
 - **NetCore**    
     - [Index.cshtml](ASP.NET%20Core/Views/Home/Index.cshtml)
 
