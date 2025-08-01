@@ -41,20 +41,22 @@ function MessageTemplate({ text, onRegenerateButtonClick }: MessageProps): JSX.E
       <div className='dx-chat-messagebubble-text'>
         {parsedHtml}
       </div>
-      <div className='dx-bubble-button-container'>
-        <Button
-          icon={icon}
-          stylingMode='text'
-          hint='Copy'
-          onClick={onCopyButtonClick}
-        />
-        <Button
-          icon='refresh'
-          stylingMode='text'
-          hint='Regenerate'
-          onClick={onRegenerateButtonClick}
-        />
-      </div>
+      {text !== 'Regeneration...' && (
+        <div className='dx-bubble-button-container'>
+          <Button
+            icon={icon}
+            stylingMode='text'
+            hint='Copy'
+            onClick={onCopyButtonClick}
+          />
+          <Button
+            icon='refresh'
+            stylingMode='text'
+            hint='Regenerate'
+            onClick={onRegenerateButtonClick}
+          />
+        </div>)
+      }
     </React.Fragment>
   );
 }

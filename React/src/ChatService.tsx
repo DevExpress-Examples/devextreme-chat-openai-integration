@@ -1,58 +1,38 @@
-import {
-  type User, type Alert, type MessageEnteredEvent, type Message,
-} from 'devextreme/ui/chat';
-import DataSource from 'devextreme/data/data_source';
-import CustomStore from 'devextreme/data/custom_store';
+import { type ChatTypes } from 'devextreme-react/chat';
+import { DataSource, CustomStore } from 'devextreme-react/common/data';
 import { OpenAI } from 'openai';
 import { BehaviorSubject, Observable } from 'rxjs';
-import TextArea from 'devextreme/ui/text_area';
+import { ALERT_TIMEOUT, assistant, OpenAIConfig } from './data.ts';
 
 class AppService {
   chatService: OpenAI;
 
-  OpenAIConfig = {
-    dangerouslyAllowBrowser: true,
-    apiKey: 'OPEN_AI_KEY',
-    deployment: 'gpt-4o-mini',
-  };
-
-  ALERT_TIMEOUT = 10000;
-
-  user: User = {
-    id: 'user',
-  };
-
-  assistant: User = {
-    id: 'assistant',
-    name: 'Virtual Assistant',
-  };
-
-  store: Message[] = [];
+  store: ChatTypes.Message[] = [];
 
   messages: { role: 'user' | 'assistant' | 'system'; content: string }[] = [];
 
-  alerts: Alert[] = [];
+  alerts: ChatTypes.Alert[] = [];
 
   customStore?: CustomStore;
 
   dataSource?: DataSource;
 
-  private readonly typingUsersSubject: BehaviorSubject<User[]> = new BehaviorSubject<User[]>([]);
+  private readonly typingUsersSubject: BehaviorSubject<ChatTypes.User[]> = new BehaviorSubject<ChatTypes.User[]>([]);
 
-  private readonly alertsSubject: BehaviorSubject<Alert[]> = new BehaviorSubject<Alert[]>([]);
+  private readonly alertsSubject: BehaviorSubject<ChatTypes.Alert[]> = new BehaviorSubject<ChatTypes.Alert[]>([]);
 
   constructor() {
-    this.chatService = new OpenAI(this.OpenAIConfig);
+    this.chatService = new OpenAI(OpenAIConfig);
     this.initDataSource();
     this.typingUsersSubject.next([]);
     this.alertsSubject.next([]);
   }
 
-  get typingUsers$(): Observable<User[]> {
+  get typingUsers$(): Observable<ChatTypes.User[]> {
     return this.typingUsersSubject.asObservable();
   }
 
-  get alerts$(): Observable<Alert[]> {
+  get alerts$(): Observable<ChatTypes.Alert[]> {
     return this.alertsSubject.asObservable();
   }
 
@@ -74,7 +54,7 @@ class AppService {
           resolve([...this.store]);
         }, 0);
       }),
-      insert: (message: Message) => new Promise((resolve): void => {
+      insert: (message: ChatTypes.Message) => new Promise((resolve): void => {
         setTimeout(() => {
           this.store.push(message);
           resolve(message);
@@ -94,7 +74,7 @@ class AppService {
         role: msg.role,
         content: msg.content,
       })),
-      model: this.OpenAIConfig.deployment,
+      model: OpenAIConfig.deployment,
     };
 
     const response = await this.chatService.chat.completions.create(params);
@@ -102,9 +82,10 @@ class AppService {
     return data.choices[0].message?.content;
   }
 
-  async processMessageSending(): Promise<void> {
-    this.toggleDisabledState(true);
-    this.typingUsersSubject.next([this.assistant]);
+  async processMessageSending(setDisabled: Function, event: Event | undefined): Promise<void> {
+    setDisabled(true);
+    (event?.target as HTMLElement).blur();
+    this.typingUsersSubject.next([assistant]);
 
     try {
       const aiResponse = await this.getAIResponse(this.messages);
@@ -114,21 +95,12 @@ class AppService {
         this.renderAssistantMessage(aiResponse ?? '');
       }, 200);
     } catch {
+      (event?.target as HTMLElement).focus();
       this.typingUsersSubject.next([]);
       this.alertLimitReached();
     } finally {
-      this.toggleDisabledState(false);
-    }
-  }
-
-  toggleDisabledState(disabled: boolean): void {
-    let element = document.querySelector('.dx-chat-messagebox-textarea');
-    let textAreaInstance = element ? TextArea.getInstance(element) as TextArea : null;
-
-    textAreaInstance?.option({ disabled });
-
-    if (!disabled) {
-      textAreaInstance?.focus();
+      (event?.target as HTMLElement).focus();
+      setDisabled(false);
     }
   }
 
@@ -152,7 +124,7 @@ class AppService {
     const message = {
       id: Date.now(),
       timestamp: new Date(),
-      author: this.assistant,
+      author: assistant,
       text,
     };
 
@@ -168,10 +140,10 @@ class AppService {
 
     setTimeout((): void => {
       this.setAlerts([]);
-    }, this.ALERT_TIMEOUT);
+    }, ALERT_TIMEOUT);
   }
 
-  setAlerts(alerts: Alert[]): void {
+  setAlerts(alerts: ChatTypes.Alert[]): void {
     this.alerts = alerts;
     this.alertsSubject.next(alerts);
   }
@@ -194,13 +166,14 @@ class AppService {
     }
   }
 
-  onMessageEntered({ message }: MessageEnteredEvent): void {
+  onMessageEntered(event: ChatTypes.MessageEnteredEvent, setDisabled: Function): void {
+    let { message } = event;
     this.dataSource
       ?.store()
       .push([{ type: 'insert', data: { id: Date.now(), ...message } }]);
 
     this.messages.push({ role: 'user', content: message?.text ?? '' });
-    void this.processMessageSending();
+    void this.processMessageSending(setDisabled, event.event);
   }
 }
 
