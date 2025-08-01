@@ -1,5 +1,5 @@
 <template>
-  <div class="demo-container">
+  <div :class="['demo-container', { 'chat-disabled': isDisabled }]">
     <DxChat
       :data-source="dataSource"
       :reload-on-change="false"
@@ -7,8 +7,8 @@
       :show-day-headers="false"
       :user="user"
       height="710"
-      :typing-users="typingUsers"
-      :alerts="alerts"
+      v-model:typing-users="typingUsers"
+      v-model:alerts="alerts"
       @message-entered="onMessageEntered"
       message-template="messageTemplate"
     >
@@ -59,7 +59,8 @@ const {
   convertToHtml,
   onMessageEntered,
   onCopyButtonClick,
-  onRegenerateButtonClick
+  onRegenerateButtonClick,
+  isDisabled
 } = useChatLogic();
 
 // Initialize component

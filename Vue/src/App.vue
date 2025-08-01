@@ -31,4 +31,9 @@ import 'devextreme/dist/css/dx.fluent.blue.light.css';
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
+
+:deep(.chat-disabled .dx-chat-messagebox) {
+  opacity: 0.5;
+  pointer-events: none;
+}
 </style>
