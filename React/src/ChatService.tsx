@@ -1,6 +1,5 @@
 import { type ChatTypes } from 'devextreme-react/chat';
-import DataSource from 'devextreme/data/data_source';
-import CustomStore from 'devextreme/data/custom_store';
+import { DataSource, CustomStore } from "devextreme-react/common/data"
 import { OpenAI } from 'openai';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ALERT_TIMEOUT, assistant, OpenAIConfig } from './data.ts';
