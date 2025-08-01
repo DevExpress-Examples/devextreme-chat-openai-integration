@@ -1,14 +1,12 @@
 import { ref } from 'vue';
 import { OpenAI } from 'openai';
-import DataSource from 'devextreme/data/data_source';
-import CustomStore from 'devextreme/data/custom_store';
+import { CustomStore, DataSource } from 'devextreme-vue/common/data';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
 import { loadMessages } from 'devextreme/localization';
-import TextArea from 'devextreme/ui/text_area';
-import type { MessageEnteredEvent } from "devextreme/ui/chat";
+import type { DxChatTypes } from 'devextreme-vue/chat';
 
 const ALERT_TIMEOUT = 10000;
 const OpenAIConfig = {
@@ -17,13 +15,13 @@ const OpenAIConfig = {
   deployment: 'gpt-4o-mini'
 };
 
-const assistant = { id: 'assistant', name: 'Virtual Assistant' };
+const assistant: DxChatTypes.User = { id: 'assistant', name: 'Virtual Assistant' };
 
 export function useChatLogic() {
   const dataSource = ref<DataSource | null>(null);
   const user = ref({ id: 'user' });
-  const typingUsers = ref<Array<{id: string, name: string}>>([]);
-  const alerts = ref<Array<{message: string}>>([]);
+  const typingUsers = ref<Array<DxChatTypes.User>>([]);
+  const alerts = ref<Array<DxChatTypes.Alert>>([]);
   const regenerationText = ref('Regeneration...');
   const copyButtonIcon = ref('copy');
   const isDisabled = ref(false);
@@ -67,8 +65,8 @@ export function useChatLogic() {
     return response.choices[0].message?.content;
   };
 
-  const processMessageSending = async() => {
-    toggleDisabledState(true);
+  const processMessageSending = async(e: DxChatTypes.MessageEnteredEvent) => {
+    toggleDisabledState(true, e.event);
     typingUsers.value = [assistant];
 
     try {
@@ -82,7 +80,7 @@ export function useChatLogic() {
       typingUsers.value = [];
       alertLimitReached();
     } finally {
-      toggleDisabledState(false);
+      toggleDisabledState(false, e.event);
     }
   };
 
@@ -145,18 +143,20 @@ export function useChatLogic() {
       .toString();
   };
 
-  const toggleDisabledState = (disabled: boolean) => {
-    let element = document.querySelector('.dx-chat-messagebox-textarea');
-    let textAreaInstance = element ? TextArea.getInstance(element) as TextArea : null;
+  const toggleDisabledState = (disabled: boolean, event?: { target?: EventTarget } | undefined) => {
+    const element = event?.target as HTMLElement;
+    isDisabled.value = disabled;
 
-    textAreaInstance?.option('disabled', disabled);
-
-    if (!disabled) {
-      textAreaInstance?.focus();
+    if (element) {
+      if (disabled) {
+        element.blur();
+      } else {
+        element.focus();
+      }
     }
   };
 
-  const onMessageEntered = async(e: MessageEnteredEvent) => {
+  const onMessageEntered = async(e: DxChatTypes.MessageEnteredEvent) => {
     let { message } = e;
     dataSource.value?.store().push([{
       type: 'insert',
@@ -164,7 +164,7 @@ export function useChatLogic() {
     }]);
 
     messages.value.push({ role: 'user', content: message?.text ?? '' });
-    await processMessageSending();
+    await processMessageSending(e);
   };
 
   const onCopyButtonClick = (message: {text: string}) => {
@@ -190,12 +190,12 @@ export function useChatLogic() {
     alerts,
     regenerationText,
     copyButtonIcon,
-    isDisabled,
     loadMessage,
     initDataSource,
     convertToHtml,
     onMessageEntered,
     onCopyButtonClick,
-    onRegenerateButtonClick
+    onRegenerateButtonClick,
+    isDisabled
   };
 }
