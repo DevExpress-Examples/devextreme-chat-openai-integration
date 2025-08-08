@@ -6,9 +6,9 @@
 <!-- default badges end -->
 # DevExtreme Chat - Integration with OpenAI
 
-This repository stores code for the following DevExtreme help topic: [Integrate with AI Service - OpenAI](https://js.devexpress.com/Documentation/Guide/UI_Components/Chat/Integrate_with_AI_Service/#OpenAI).
+This repository contains code referenced in the following DevExtreme help topic: [Integrate with AI Service - OpenAI](https://js.devexpress.com/Documentation/Guide/UI_Components/Chat/Integrate_with_AI_Service/#OpenAI).
 
-This example demonstrates how to integrate DevExtreme Chat with [OpenAI](https://platform.openai.com/docs/overview). Obtain your own [API key](https://platform.openai.com/api-keys) and replace the placeholder to activate the example.
+This example integrates DevExtreme Chat with [OpenAI](https://platform.openai.com/docs/overview). Obtain your own [API key](https://platform.openai.com/api-keys) and replace the placeholder to integrate our implementation.
 
 <div align="center"><img src="./chat-openai.png" /></div>
 
