@@ -1,39 +1,33 @@
-# Vue 
+# Vue 3 + TypeScript + Vite + DevExtreme
 
-Take a look at the following files of this example to see the required code: 
+For more information about this example check the [Readme](../README.md).
 
-- Your files go here
+## Build and Lint
 
-This project was bootstrapped with [Vue CLI](https://cli.vuejs.org/).
-
-## Project setup
-
-```
+Install dependencies:
+```sh
 npm install
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
+Build the production bundle:
+```sh
 npm run build
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Run the linter:
+```sh
+npm run lint
+```
+
+Dev server to preview locally:
+```sh
+npm run dev
+```
 
 ## Further help
 
-You can learn more about Vue in the [Vue documentation](https://vuejs.org/v2/guide/).
-
-To get more help on DevExtreme submit an issue on [GitHub](https://github.com/DevExpress/devextreme/issues) or [Support Center](https://www.devexpress.com/Support/Center/Question/Create)
-npm run lint
-```
-### Further help
-
 You can learn more about Vue in the [Vue documentation](https://vuejs.org/guide/introduction.html).
+You can learn more about Vite in the [Vite documentation](https://vite.dev/).
+You can learn more about DevExtreme Vue components in the [DevExtreme Vue documentation](https://js.devexpress.com/Vue/).
 
-To get more help on DevExtreme submit an issue on [GitHub](https://github.com/DevExpress/devextreme/issues) or [Support Center](https://www.devexpress.com/Support/Center/Question/Create)
+To get more help with DevExtreme, submit a ticket through the [Support Center](https://supportcenter.devexpress.com/ticket/create).
