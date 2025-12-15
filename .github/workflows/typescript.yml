@@ -25,8 +25,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ./Angular/node_modules
-        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: ${{ runner.os }}-node-modules
+        key: ${{ runner.os }}-angular-${{ hashFiles('Angular/package-lock.json') }}
 
     - name: Run npm install
       working-directory: Angular
@@ -52,8 +51,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ./React/node_modules
-        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: ${{ runner.os }}-node-modules
+        key: ${{ runner.os }}-react-${{ hashFiles('React/package-lock.json') }}
 
     - name: Run npm install
       working-directory: React
@@ -77,8 +75,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ./Vue/node_modules
-        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: ${{ runner.os }}-node-modules
+        key: ${{ runner.os }}-vue-${{ hashFiles('Vue/package-lock.json') }}
 
     - name: Run npm install
       working-directory: Vue
