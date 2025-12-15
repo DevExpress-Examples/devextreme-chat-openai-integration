@@ -21,15 +21,9 @@ jobs:
     - name: Use Node.js
       uses: actions/setup-node@v3
 
-    - name: Restore npm cache
-      uses: actions/cache@v3
-      with:
-        path: ./Angular/node_modules
-        key: ${{ runner.os }}-angular-${{ hashFiles('Angular/package-lock.json') }}
-
-    - name: Run npm install
+    - name: Clean install
       working-directory: Angular
-      run: npm install --no-audit --no-fund
+      run: npm ci --no-audit --no-fund
 
     - name: TSC Angular
       working-directory: Angular
@@ -47,15 +41,9 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Restore npm cache
-      uses: actions/cache@v3
-      with:
-        path: ./React/node_modules
-        key: ${{ runner.os }}-react-${{ hashFiles('React/package-lock.json') }}
-
-    - name: Run npm install
+    - name: Clean install
       working-directory: React
-      run: npm install --no-audit --no-fund
+      run: npm ci --no-audit --no-fund
 
     - name: TSC React
       working-directory: React
@@ -71,15 +59,9 @@ jobs:
     - name: Use Node.js
       uses: actions/setup-node@v3
 
-    - name: Restore npm cache
-      uses: actions/cache@v3
-      with:
-        path: ./Vue/node_modules
-        key: ${{ runner.os }}-vue-${{ hashFiles('Vue/package-lock.json') }}
-
-    - name: Run npm install
+    - name: Clean install
       working-directory: Vue
-      run: npm install --no-audit --no-fund
+      run: npm ci --no-audit --no-fund
 
     - name: TSC Vue
       working-directory: Vue
