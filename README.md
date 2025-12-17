@@ -9,7 +9,7 @@ This repository contains code referenced in the following DevExtreme help topic:
 
 This example integrates DevExtreme Chat with [OpenAI](https://platform.openai.com/docs/overview). Obtain your own [API key](https://platform.openai.com/api-keys) and replace the placeholder to integrate our implementation.
 
-<div align="center"><img src="./chat-openai.png" /></div>
+<div align="center"><img src="./images/chat-openai.png" /></div>
 
 ## Files to Review
 
