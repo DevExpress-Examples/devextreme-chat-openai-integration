@@ -1,5 +1,4 @@
 <!-- default badges list -->
-![](https://img.shields.io/endpoint?url=https://codecentral.devexpress.com/api/v1/VersionRange/1018060321/25.1.3%2B)
 [![](https://img.shields.io/badge/Open_in_DevExpress_Support_Center-FF7200?style=flat-square&logo=DevExpress&logoColor=white)](https://supportcenter.devexpress.com/ticket/details/T1299498)
 [![](https://img.shields.io/badge/📖_How_to_use_DevExpress_Examples-e9f6fc?style=flat-square)](https://docs.devexpress.com/GeneralInformation/403183)
 [![](https://img.shields.io/badge/💬_Leave_Feedback-feecdd?style=flat-square)](#does-this-example-address-your-development-requirementsobjectives)
@@ -10,7 +9,7 @@ This repository contains code referenced in the following DevExtreme help topic:
 
 This example integrates DevExtreme Chat with [OpenAI](https://platform.openai.com/docs/overview). Obtain your own [API key](https://platform.openai.com/api-keys) and replace the placeholder to integrate our implementation.
 
-<div align="center"><img src="./chat-openai.png" /></div>
+<div align="center"><img src="./images/chat-openai.png" /></div>
 
 ## Files to Review
 
