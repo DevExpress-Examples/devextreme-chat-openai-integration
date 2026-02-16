@@ -33,7 +33,7 @@ This example integrates DevExtreme Chat with [OpenAI](https://platform.openai.co
 - [Chat - API](https://js.devexpress.com/React/Documentation/ApiReference/UI_Components/dxChat/)
 
 <!-- feedback -->
-## Does this example address your development requirements/objectives?
+## Does This Example Address Your Development Requirements/Objectives?
 
 [<img src="https://www.devexpress.com/support/examples/i/yes-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=devextreme-chat-openai-integration&~~~was_helpful=yes) [<img src="https://www.devexpress.com/support/examples/i/no-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=devextreme-chat-openai-integration&~~~was_helpful=no)
 
