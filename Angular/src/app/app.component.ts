@@ -5,10 +5,11 @@ import { AppService } from "./app.service";
 import { loadMessages } from "devextreme/localization";
 import { DataSource } from 'devextreme-angular/common/data';
 import { DxButtonModule, DxChatModule } from 'devextreme-angular';
+import { AsyncPipe, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [DxButtonModule, DxChatModule],
+  imports: [DxButtonModule, DxChatModule, NgIf, AsyncPipe],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
