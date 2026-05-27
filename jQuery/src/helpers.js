@@ -117,7 +117,9 @@ async function getAIResponse(messagesAI, chatService) {
 export function convertToHtml(value) {
   return unified()
     .use(remarkParse)
+    // eslint-disable-next-line spellcheck/spell-checker
     .use(remarkRehype)
+    // eslint-disable-next-line spellcheck/spell-checker
     .use(rehypeStringify)
     .processSync(value)
     .toString();

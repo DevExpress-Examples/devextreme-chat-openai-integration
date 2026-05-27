@@ -2,7 +2,7 @@ import { type ChatTypes } from 'devextreme-react/chat';
 import { DataSource, CustomStore } from 'devextreme-react/common/data';
 import { OpenAI } from 'openai';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ALERT_TIMEOUT, assistant, OpenAIConfig } from './data.ts';
+import { ALERT_TIMEOUT, assistant, OpenAIConfig } from './data';
 
 class AppService {
   chatService: OpenAI;
@@ -173,6 +173,7 @@ class AppService {
       .push([{ type: 'insert', data: { id: Date.now(), ...message } }]);
 
     this.messages.push({ role: 'user', content: message?.text ?? '' });
+    // eslint-disable-next-line no-void
     void this.processMessageSending(setDisabled, event.event);
   }
 }

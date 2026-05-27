@@ -28,6 +28,7 @@ function MessageTemplate({ text, onRegenerateButtonClick }: MessageProps): JSX.E
   const [icon, setIcon] = useState('copy');
   const parsedHtml = useMemo(() => HTMLReactParser(convertToHtml(text)), [text]);
   const onCopyButtonClick = useCallback(() => {
+    // eslint-disable-next-line no-void
     void navigator.clipboard?.writeText(text);
     setIcon('check');
 
