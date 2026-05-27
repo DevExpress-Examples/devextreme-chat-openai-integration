@@ -4,9 +4,11 @@ import { Observable } from "rxjs";
 import { AppService } from "./app.service";
 import { loadMessages } from "devextreme/localization";
 import { DataSource } from 'devextreme-angular/common/data';
+import { DxButtonModule, DxChatModule } from 'devextreme-angular';
 
 @Component({
   selector: 'app-root',
+  imports: [DxButtonModule, DxChatModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
