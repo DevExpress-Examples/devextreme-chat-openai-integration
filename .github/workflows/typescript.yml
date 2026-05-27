@@ -16,14 +16,23 @@ jobs:
     timeout-minutes: 60
     steps:
     - name: Get sources
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Use Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
 
-    - name: Clean install
+    - name: Restore npm cache
+      uses: actions/cache@v4
+      with:
+        path: ./Angular/node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: ${{ runner.os }}-node-modules
+
+    - name: Run npm install
       working-directory: Angular
-      run: npm ci --no-audit --no-fund
+      run: npm install --no-fund
 
     - name: TSC Angular
       working-directory: Angular
@@ -34,16 +43,23 @@ jobs:
     timeout-minutes: 60
     steps:
     - name: Get sources
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Use Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
 
-    - name: Clean install
+    - name: Restore npm cache
+      uses: actions/cache@v4
+      with:
+        path: ./React/node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: ${{ runner.os }}-node-modules
+
+    - name: Run npm install
       working-directory: React
-      run: npm ci --no-audit --no-fund
+      run: npm install --no-fund
 
     - name: TSC React
       working-directory: React
@@ -54,14 +70,23 @@ jobs:
     timeout-minutes: 60
     steps:
     - name: Get sources
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Use Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
 
-    - name: Clean install
+    - name: Restore npm cache
+      uses: actions/cache@v4
+      with:
+        path: ./Vue/node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: ${{ runner.os }}-node-modules
+
+    - name: Run npm install
       working-directory: Vue
-      run: npm ci --no-audit --no-fund
+      run: npm install --no-fund
 
     - name: TSC Vue
       working-directory: Vue
