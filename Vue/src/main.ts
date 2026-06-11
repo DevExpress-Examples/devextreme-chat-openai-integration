@@ -1,11 +1,10 @@
+import { createApp } from 'vue';
 import config from 'devextreme/core/config';
+import App from './App.vue';
+import './assets/main.css';
 import { licenseKey } from './devextreme-license';
 
 config({ licenseKey });
-
-import { createApp } from 'vue';
-import App from './App.vue';
-import './assets/main.css';
 
 const app = createApp(App);
 
