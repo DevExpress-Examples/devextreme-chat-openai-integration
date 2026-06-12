@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { type DxChatTypes } from 'devextreme-angular/ui/chat';
 import { Observable } from "rxjs";
 import { AppService } from "./app.service";
@@ -11,6 +11,7 @@ import { AsyncPipe, NgIf } from '@angular/common';
   selector: 'app-root',
   imports: [DxButtonModule, DxChatModule, NgIf, AsyncPipe],
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
