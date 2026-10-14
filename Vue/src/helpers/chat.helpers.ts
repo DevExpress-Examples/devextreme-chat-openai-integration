@@ -61,7 +61,7 @@ export function useChatLogic() {
       model: OpenAIConfig.deployment
     };
 
-    const response = await chatService.chat.completions.create(params);
+    const response = await chatService.chat.completions.create(params, { maxRetries: 0 });
     return response.choices[0].message?.content;
   };
 
@@ -76,9 +76,9 @@ export function useChatLogic() {
         messages.value.push({ role: 'assistant', content: aiResponse ?? '' });
         renderAssistantMessage(aiResponse ?? '');
       }, 200);
-    } catch {
+    } catch (error: unknown) {
       typingUsers.value = [];
-      alertLimitReached();
+      alertError(getErrorMessage(error));
     } finally {
       toggleDisabledState(false, e.event);
     }
@@ -109,8 +109,14 @@ export function useChatLogic() {
     dataSource.value?.store().push([{ type: 'insert', data: message }]);
   };
 
-  const alertLimitReached = () => {
-    setAlerts([{ message: 'Request limit reached, try again in a minute.' }]);
+  const getErrorMessage = (error: unknown): string => {
+    if (error instanceof Error) return error.message;
+    if (typeof error === 'string') return error;
+    return 'Unknown error';
+  };
+
+  const alertError = (message: string) => {
+    setAlerts([{ message }]);
     setTimeout(() => setAlerts([]), ALERT_TIMEOUT);
   };
 
@@ -127,10 +133,10 @@ export function useChatLogic() {
         lastMsg.content = aiResponse ?? '';
         messages.value = [...messages.value];
       }
-    } catch {
+    } catch (error: unknown) {
       const lastMsg = messages.value.at(-1);
       if (lastMsg) updateLastMessage(lastMsg.content);
-      alertLimitReached();
+      alertError(getErrorMessage(error));
     }
   };
 
@@ -157,6 +163,7 @@ export function useChatLogic() {
   };
 
   const onMessageEntered = async(e: DxChatTypes.MessageEnteredEvent) => {
+    setAlerts([]);
     let { message } = e;
     dataSource.value?.store().push([{
       type: 'insert',

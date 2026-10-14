@@ -116,7 +116,7 @@ export class AppService {
       model: this.OpenAIConfig.deployment,
     };
 
-    const response = await this.chatService.chat.completions.create(params);
+    const response = await this.chatService.chat.completions.create(params, { maxRetries: 0 });
 
     const data = { choices: response.choices };
 
@@ -134,9 +134,9 @@ export class AppService {
         this.messages.push({ role: "assistant", content: aiResponse ?? "" });
         this.renderAssistantMessage(aiResponse ?? "");
       }, 200);
-    } catch {
+    } catch (error: unknown) {
       this.typingUsersSubject.next([]);
-      this.alertLimitReached();
+      this.alertError(this.getErrorMessage(error));
     } finally {
       this.toggleDisabledState(false, e.event);
     }
@@ -168,10 +168,16 @@ export class AppService {
     this.dataSource?.store().push([{ type: "insert", data: message }]);
   }
 
-  alertLimitReached() {
+  getErrorMessage(error: unknown): string {
+    if (error instanceof Error) return error.message;
+    if (typeof error === "string") return error;
+    return "Unknown error";
+  }
+
+  alertError(message: string) {
     this.setAlerts([
       {
-        message: "Request limit reached, try again in a minute.",
+        message,
       },
     ]);
 
@@ -195,12 +201,12 @@ export class AppService {
           lastMsg.content = aiResponse ?? '';
           this.messages = [...this.messages];
       }
-    } catch {
+    } catch (error: unknown) {
       const lastMsg = this.messages.at(-1);
       if (lastMsg) {
         this.updateLastMessage(lastMsg.content);
     }
-      this.alertLimitReached();
+      this.alertError(this.getErrorMessage(error));
     }
   }
 
@@ -216,6 +222,7 @@ export class AppService {
   }
 
   async onMessageEntered(event: DxChatTypes.MessageEnteredEvent) {
+    this.setAlerts([]);
     let { message } = event;
     this.dataSource
       ?.store()
