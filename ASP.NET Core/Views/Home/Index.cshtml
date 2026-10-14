@@ -100,6 +100,7 @@
      }
 
      async function regenerate() {
+         instance.option({ alerts: [] });
          toggleDisabledState(true);
 
          try {

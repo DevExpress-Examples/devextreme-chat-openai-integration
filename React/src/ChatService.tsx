@@ -155,6 +155,7 @@ class AppService {
   }
 
   async regenerate(): Promise<void> {
+    this.setAlerts([]);
     try {
       const aiResponse = await this.getAIResponse(this.messages.slice(0, -1));
       this.updateLastMessage(aiResponse);

@@ -125,6 +125,7 @@ export function useChatLogic() {
   };
 
   const regenerate = async() => {
+    setAlerts([]);
     try {
       const aiResponse = await getAIResponse(messages.value.slice(0, -1));
       updateLastMessage(aiResponse);

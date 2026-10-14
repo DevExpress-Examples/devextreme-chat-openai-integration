@@ -192,6 +192,7 @@ export class AppService {
   }
 
   async regenerate() {
+    this.setAlerts([]);
     try {
       const aiResponse = await this.getAIResponse(this.messages.slice(0, -1));
 

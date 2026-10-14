@@ -74,6 +74,7 @@ function renderMessage(text, customStore) {
   customStore.push([{ type: 'insert', data: message }]);
 }
 export async function regenerate(chatInstance, messages, chatService, customStore) {
+  chatInstance.option({ alerts: [] });
   toggleDisabledState(true, chatInstance);
 
   try {
