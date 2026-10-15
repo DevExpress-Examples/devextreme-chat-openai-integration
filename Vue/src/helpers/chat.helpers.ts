@@ -115,9 +115,12 @@ export function useChatLogic() {
     return 'Unknown error';
   };
 
+  let alertTimeoutId: ReturnType<typeof setTimeout> | undefined;
+
   const alertError = (message: string) => {
+    clearTimeout(alertTimeoutId);
     setAlerts([{ message }]);
-    setTimeout(() => setAlerts([]), ALERT_TIMEOUT);
+    alertTimeoutId = setTimeout(() => setAlerts([]), ALERT_TIMEOUT);
   };
 
   const setAlerts = (newAlerts: any[]) => {

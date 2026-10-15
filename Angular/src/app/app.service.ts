@@ -174,14 +174,18 @@ export class AppService {
     return "Unknown error";
   }
 
+  private alertTimeoutId?: ReturnType<typeof setTimeout>;
+
   alertError(message: string) {
+    clearTimeout(this.alertTimeoutId);
+
     this.setAlerts([
       {
         message,
       },
     ]);
 
-    setTimeout(() => {
+    this.alertTimeoutId = setTimeout(() => {
       this.setAlerts([]);
     }, this.ALERT_TIMEOUT);
   }

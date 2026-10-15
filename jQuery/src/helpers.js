@@ -1,7 +1,7 @@
 import {
   assistant,
-  CHAT_MESSAGEBOX_BUTTON_CLASS,
-  CHAT_MESSAGEBOX_TEXTAREA_CLASS,
+  CHAT_SEND_BUTTON_SELECTOR,
+  CHAT_TEXTAREA_CLASS,
   deployment,
   REGENERATION_TEXT,
 } from './data.js';
@@ -21,23 +21,34 @@ function getErrorMessage(error) {
   return 'Unknown error';
 }
 
+let alertTimeoutId;
+
 function alertError(message, chatInstance) {
+  clearTimeout(alertTimeoutId);
+
   chatInstance.option({
     alerts: [{
       message,
     }],
   });
 
-  setTimeout(() => {
+  alertTimeoutId = setTimeout(() => {
     chatInstance.option({ alerts: [] });
   }, 10000);
 }
 
 function toggleDisabledState(disabled, chatInstance) {
-  chatInstance.option({ disabled });
+  const $button = chatInstance.element().find(CHAT_SEND_BUTTON_SELECTOR);
+  const $textArea = chatInstance.element().find(`.${CHAT_TEXTAREA_CLASS}`);
+  const $input = $textArea.find('.dx-texteditor-input');
+  const buttonInstance = $button.dxButton('instance');
+
+  buttonInstance.option({ disabled: disabled || !$input.val().trim() });
+  $textArea.toggleClass('dx-state-disabled', disabled);
+  $input.prop('disabled', disabled);
 
   if (!disabled) {
-    chatInstance.focus();
+    $input.trigger('focus');
   }
 }
 
