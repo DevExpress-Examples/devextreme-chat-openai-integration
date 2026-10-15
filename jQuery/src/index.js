@@ -47,6 +47,7 @@ $(() => {
     user,
     height: 710,
     onMessageEntered: (e) => {
+      instance.option({ alerts: [] });
       const { message } = e;
 
       customStore.push([{ type: 'insert', data: { id: Date.now(), ...message } }]);

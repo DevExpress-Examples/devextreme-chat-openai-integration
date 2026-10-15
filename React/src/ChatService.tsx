@@ -77,7 +77,7 @@ class AppService {
       model: OpenAIConfig.deployment,
     };
 
-    const response = await this.chatService.chat.completions.create(params);
+    const response = await this.chatService.chat.completions.create(params, { maxRetries: 0 });
     const data = { choices: response.choices };
     return data.choices[0].message?.content;
   }
@@ -94,10 +94,10 @@ class AppService {
         this.messages.push({ role: 'assistant', content: aiResponse ?? '' });
         this.renderAssistantMessage(aiResponse ?? '');
       }, 200);
-    } catch {
+    } catch (error: unknown) {
       (event?.target as HTMLElement).focus();
       this.typingUsersSubject.next([]);
-      this.alertLimitReached();
+      this.alertError(this.getErrorMessage(error));
     } finally {
       (event?.target as HTMLElement).focus();
       setDisabled(false);
@@ -131,14 +131,24 @@ class AppService {
     this.dataSource?.store().push([{ type: 'insert', data: message }]);
   }
 
-  alertLimitReached(): void {
+  getErrorMessage(error: unknown): string {
+    if (error instanceof Error) return error.message;
+    if (typeof error === 'string') return error;
+    return 'Unknown error';
+  }
+
+  private alertTimeoutId?: ReturnType<typeof setTimeout>;
+
+  alertError(message: string): void {
+    clearTimeout(this.alertTimeoutId);
+
     this.setAlerts([
       {
-        message: 'Request limit reached, try again in a minute.',
+        message,
       },
     ]);
 
-    setTimeout((): void => {
+    this.alertTimeoutId = setTimeout((): void => {
       this.setAlerts([]);
     }, ALERT_TIMEOUT);
   }
@@ -149,6 +159,7 @@ class AppService {
   }
 
   async regenerate(): Promise<void> {
+    this.setAlerts([]);
     try {
       const aiResponse = await this.getAIResponse(this.messages.slice(0, -1));
       this.updateLastMessage(aiResponse);
@@ -157,16 +168,17 @@ class AppService {
         lastMsg.content = aiResponse ?? '';
         this.messages = [...this.messages];
       }
-    } catch {
+    } catch (error: unknown) {
       const lastMsg = this.messages.at(-1);
       if (lastMsg) {
         this.updateLastMessage(lastMsg.content);
       }
-      this.alertLimitReached();
+      this.alertError(this.getErrorMessage(error));
     }
   }
 
   onMessageEntered(event: ChatTypes.MessageEnteredEvent, setDisabled: Function): void {
+    this.setAlerts([]);
     let { message } = event;
     this.dataSource
       ?.store()

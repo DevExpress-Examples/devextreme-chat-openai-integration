@@ -47,18 +47,28 @@
          name: "Virtual Assistant",
      };
      const REGENERATION_TEXT = "Regeneration...";
-     const CHAT_MESSAGEBOX_BUTTON_CLASS = 'dx-chat-messagebox-button';
-     const CHAT_MESSAGEBOX_TEXTAREA_CLASS = 'dx-chat-messagebox-textarea';
+     const CHAT_SEND_BUTTON_SELECTOR = '.dx-chat-textarea-toolbar .dx-button';
+     const CHAT_TEXTAREA_CLASS = 'dx-chat-textarea';
      const ALERT_TIMEOUT = 1000 * 60;
 
-     function alertLimitReached() {
+     function getErrorMessage(error) {
+         if (error instanceof Error) return error.message;
+         if (typeof error === "string") return error;
+         return "Unknown error";
+     }
+
+     let alertTimeoutId;
+
+     function alertError(message) {
+         clearTimeout(alertTimeoutId);
+
          instance.option({
              alerts: [{
-                 message: "Request limit reached, try again in a minute.",
+                 message,
              }],
          });
 
-         setTimeout(() => {
+         alertTimeoutId = setTimeout(() => {
              instance.option({ alerts: [] });
          }, ALERT_TIMEOUT);
      }
@@ -89,11 +99,12 @@
              temperature: 0.7,
          };
 
-         const response = await chatService.chat.completions.create(params);
+         const response = await chatService.chat.completions.create(params, { maxRetries: 0 });
          return response.choices[0].message?.content;
      }
 
      async function regenerate() {
+         instance.option({ alerts: [] });
          toggleDisabledState(true);
 
          try {
@@ -101,9 +112,9 @@
 
              updateLastMessage(aiResponse);
              messages.at(-1).content = aiResponse;
-         } catch {
+         } catch (error) {
              updateLastMessage(messages.at(-1).content);
-             alertLimitReached();
+             alertError(getErrorMessage(error));
          } finally {
              toggleDisabledState(false);
          }
@@ -135,16 +146,17 @@
      }
 
      function toggleDisabledState(disabled, event) {
-        const $button = instance.element().find(`.${CHAT_MESSAGEBOX_BUTTON_CLASS}`);
-        const $textArea = instance.element().find(`.${CHAT_MESSAGEBOX_TEXTAREA_CLASS}`);
+        const $button = instance.element().find(CHAT_SEND_BUTTON_SELECTOR);
+        const $textArea = instance.element().find(`.${CHAT_TEXTAREA_CLASS}`);
+        const $input = $textArea.find('.dx-texteditor-input');
         const buttonInstance = $button.dxButton('instance');
-        const textAreaInstance = $textArea.dxTextArea('instance');
 
-        buttonInstance.option({ disabled });
-        textAreaInstance.option({ disabled });
+        buttonInstance.option({ disabled: disabled || !$input.val().trim() });
+        $textArea.toggleClass('dx-state-disabled', disabled);
+        $input.prop('disabled', disabled);
 
         if (!disabled) {
-          textAreaInstance.focus();
+            $input.trigger('focus');
         }
      };
 
@@ -164,21 +176,19 @@
 
                  renderAssistantMessage(aiResponse);
              }, 200);
-         } catch {
+         } catch (error) {
              instance.option({ typingUsers: [] });
              messages.pop();
-             alertLimitReached();
+             alertError(getErrorMessage(error));
          } finally {
              toggleDisabledState(false, event);
          }
      }
 
      function onMessageEntered({ message, event }) {
+         instance.option({ alerts: [] });
          dataSource.store().push([{ type: "insert", data: { id: Date.now(), ...message } }]);
-
-         if (!instance.option("alerts").length) {
-             processMessageSending(message, event);
-         }
+         processMessageSending(message, event);
      }
 
      function convertToHtml(value) {

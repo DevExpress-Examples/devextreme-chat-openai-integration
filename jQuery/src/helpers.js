@@ -1,7 +1,7 @@
 import {
   assistant,
-  CHAT_MESSAGEBOX_BUTTON_CLASS,
-  CHAT_MESSAGEBOX_TEXTAREA_CLASS,
+  CHAT_SEND_BUTTON_SELECTOR,
+  CHAT_TEXTAREA_CLASS,
   deployment,
   REGENERATION_TEXT,
 } from './data.js';
@@ -15,29 +15,40 @@ export function loadMessages() {
     },
   });
 }
-function alertLimitReached(chatInstance) {
+function getErrorMessage(error) {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'string') return error;
+  return 'Unknown error';
+}
+
+let alertTimeoutId;
+
+function alertError(message, chatInstance) {
+  clearTimeout(alertTimeoutId);
+
   chatInstance.option({
     alerts: [{
-      message: 'Request limit reached, try again in a minute.',
+      message,
     }],
   });
 
-  setTimeout(() => {
+  alertTimeoutId = setTimeout(() => {
     chatInstance.option({ alerts: [] });
   }, 10000);
 }
 
 function toggleDisabledState(disabled, chatInstance) {
-  const $button = chatInstance.element().find(`.${CHAT_MESSAGEBOX_BUTTON_CLASS}`);
-  const $textArea = chatInstance.element().find(`.${CHAT_MESSAGEBOX_TEXTAREA_CLASS}`);
+  const $button = chatInstance.element().find(CHAT_SEND_BUTTON_SELECTOR);
+  const $textArea = chatInstance.element().find(`.${CHAT_TEXTAREA_CLASS}`);
+  const $input = $textArea.find('.dx-texteditor-input');
   const buttonInstance = $button.dxButton('instance');
-  const textAreaInstance = $textArea.dxTextArea('instance');
 
-  buttonInstance.option({ disabled });
-  textAreaInstance.option({ disabled });
+  buttonInstance.option({ disabled: disabled || !$input.val().trim() });
+  $textArea.toggleClass('dx-state-disabled', disabled);
+  $input.prop('disabled', disabled);
 
   if (!disabled) {
-    textAreaInstance.focus();
+    $input.trigger('focus');
   }
 }
 
@@ -56,9 +67,9 @@ export async function processMessageSending(chatInstance, messages, customStore,
 
       renderMessage(aiResponse, customStore);
     }, 200);
-  } catch {
+  } catch (error) {
     chatInstance.option({ typingUsers: [] });
-    alertLimitReached(chatInstance);
+    alertError(getErrorMessage(error), chatInstance);
   } finally {
     toggleDisabledState(false, chatInstance);
   }
@@ -74,6 +85,7 @@ function renderMessage(text, customStore) {
   customStore.push([{ type: 'insert', data: message }]);
 }
 export async function regenerate(chatInstance, messages, chatService, customStore) {
+  chatInstance.option({ alerts: [] });
   toggleDisabledState(true, chatInstance);
 
   try {
@@ -81,9 +93,9 @@ export async function regenerate(chatInstance, messages, chatService, customStor
 
     updateLastMessage(aiResponse, chatInstance, customStore);
     messages.at(-1).content = aiResponse;
-  } catch {
-    updateLastMessage(messages.at(-1).content);
-    alertLimitReached();
+  } catch (error) {
+    updateLastMessage(messages.at(-1).content, chatInstance, customStore);
+    alertError(getErrorMessage(error), chatInstance);
   } finally {
     toggleDisabledState(false, chatInstance);
   }
@@ -108,7 +120,7 @@ async function getAIResponse(messagesAI, chatService) {
     model: deployment,
   };
 
-  const response = await chatService.chat.completions.create(params);
+  const response = await chatService.chat.completions.create(params, { maxRetries: 0 });
   const data = { choices: response.choices };
 
   return data.choices[0].message?.content;

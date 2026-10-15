@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "devextreme-license --out src/devextreme-license.ts --force",
     "dev": "vite",
     "prebuild": "devextreme-license --out src/devextreme-license.ts --force",
     "build": "tsc -b && vite build",
