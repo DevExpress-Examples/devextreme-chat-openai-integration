@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "predev": "npm run prebuild",
-    "dev": "vite",
-    "prebuild": "devextreme-license --out src/devextreme-license.ts --force",
+    "dev": "vite",    
     "build": "run-p type-check build-only",
+    "predev": "npm run prebuild",
+    "prebuild": "devextreme-license --out src/devextreme-license.ts --force",
     "preview": "vite preview",
     "test:unit": "vitest --environment jsdom --root src/",
     "build-only": "vite build",

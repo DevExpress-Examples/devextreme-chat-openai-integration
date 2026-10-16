@@ -2,10 +2,10 @@
   "name": "dx-jquery",
   "version": "1.0.0",
   "scripts": {
+    "start": "vite",    
+    "build": "npm run lint",    
     "prestart": "npm run prebuild",
-    "start": "vite",
     "prebuild": "devextreme-license --non-modular --out src/devextreme-license.js --force",
-    "build": "npm run lint",
     "lint-html": "prettier --check src/*",
     "lint-js": "eslint .",
     "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src/ --fix",
