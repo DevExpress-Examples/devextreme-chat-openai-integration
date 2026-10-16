@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "devextreme-license --out src/devextreme-license.ts --force",
-    "dev": "vite",
-    "prebuild": "devextreme-license --out src/devextreme-license.ts --force",
+    "dev": "vite",    
     "build": "tsc -b && vite build",
+    "predev": "npm run prebuild",
+    "prebuild": "devextreme-license --out src/devextreme-license.ts --force",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "lint-ts": "eslint .",
